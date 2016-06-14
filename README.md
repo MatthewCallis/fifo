@@ -44,7 +44,7 @@ If you provide a function or a regex to `remove` then multiple entries can/will 
 
 ```javascript
 // empty an entire FIFO queue
-collection.empty()
+collection.empty();
 
 // set any JavaScript object, don't have to JSON.parse or JSON.stringify
 // yourself when setting and getting.
