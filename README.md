@@ -4,7 +4,7 @@
 [![Dependency Status](https://david-dm.org/MatthewCallis/fifo.svg)](https://david-dm.org/MatthewCallis/fifo)
 [![devDependency Status](https://david-dm.org/MatthewCallis/fifo/dev-status.svg?style=flat)](https://david-dm.org/MatthewCallis/fifo#info=devDependencies)
 [![Test Coverage](https://codeclimate.com/github/MatthewCallis/fifo/badges/coverage.svg)](https://codeclimate.com/github/MatthewCallis/fifo)
-[![Coverage Status](https://coveralls.io/repos/MatthewCallis/fifo/badge.svg)](https://coveralls.io/r/MatthewCallis/fifo)
+[![Coverage Status](https://coveralls.io/repos/github/MatthewCallis/fifo/badge.svg?branch=master)](https://coveralls.io/github/MatthewCallis/fifo?branch=master)
 
 **First In First Out accounting for JavaScript `localStorage`.**
 
