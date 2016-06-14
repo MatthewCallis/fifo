@@ -3,13 +3,8 @@ node_js:
   - "stable"
 before_install:
   - npm conf set strict-ssl false
-after_install:
-  - sudo npm install -g phantomjs
 before_script:
   - phantomjs --version
-  - npm install -g mocha
-  - npm install -g istanbul
-  - npm install -g codeclimate-test-reporter
   - npm install
 script:
   - npm run instrument
