@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+  - "stable"
+before_install:
+  - npm conf set strict-ssl false
+after_install:
+  - sudo npm install -g phantomjs
+before_script:
+  - phantomjs --version
+  - npm install -g mocha
+  - npm install -g istanbul
+  - npm install -g codeclimate-test-reporter
+  - npm install
+script:
+  - npm run instrument
+  - npm run test-compile
+  - npm run test-phantomjs
+  - npm run coverage-report
+after_script:
+  - cat coverage/lcov.info | codeclimate
+  - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+branches:
+  only:
+    - master
