@@ -1,3 +1,4 @@
+/* eslint no-unused-expressions: 0 */
 import chai from 'chai';
 import Fifo from '../build/fifo.js';
 import localStorage from 'localStorage'
@@ -110,11 +111,10 @@ describe('Fifo', function () {
   });
 
   it('fixed keys can be added once FIFO queue full then add additional items to FIFO queue and check that we kept the fixed item', () => {
-    var i, key;
     if (collection.noLS) {
       return;
     }
-    i = 0;
+    let i = 0;
     let limitReached = false;
     let removedItem = null;
     let removedItemForFixedKey = null;
@@ -133,7 +133,7 @@ describe('Fifo', function () {
     };
     while (!(limitReached || i === 100)) {
       i += 1;
-      key = "test:" + i;
+      let key = "test:" + i;
       collection.set(key, n100k, fifoQueueOnLimit);
     }
     expect(collection.get('fixed-key').length).to.equal(n1m.length);

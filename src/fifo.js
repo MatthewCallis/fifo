@@ -26,7 +26,7 @@ export default class Fifo {
   }
 
   trySave(key, value) {
-    var error, error1;
+    var error;
     if (this.noLS) {
       return false;
     }

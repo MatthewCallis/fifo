@@ -98,7 +98,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Fifo, [{
 	    key: 'trySave',
 	    value: function trySave(key, value) {
-	      var error, error1;
+	      var error;
 	      if (this.noLS) {
 	        return false;
 	      }
