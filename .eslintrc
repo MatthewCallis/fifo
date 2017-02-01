@@ -1,6 +1,9 @@
-ecmaFeatures:
-  modules: true
-  jsx: true
+parserOptions:
+  sourceType: "module"
+  ecmaFeatures:
+    globalReturn: true
+    modules: true
+    jsx: true
 
 env:
   amd: true
@@ -8,6 +11,18 @@ env:
   es6: true
   jquery: true
   node: true
+
+globals:
+  document: false
+  escape: false
+  navigator: false
+  unescape: false
+  window: false
+  describe: true
+  before: true
+  it: true
+  expect: true
+  sinon: true
 
 # http://eslint.org/docs/rules/
 rules:
@@ -44,7 +59,7 @@ rules:
   # Best Practices
   accessor-pairs: 2
   block-scoped-var: 0
-  complexity: [2, 6]
+  complexity: 0
   consistent-return: 0
   curly: 0
   default-case: 0
@@ -57,7 +72,6 @@ rules:
   no-case-declarations: 2
   no-div-regex: 2
   no-else-return: 0
-  no-empty-label: 2
   no-empty-pattern: 2
   no-eq-null: 2
   no-eval: 2
@@ -104,7 +118,7 @@ rules:
 
   # Variables
   init-declarations: 0
-  no-catch-shadow: 2
+  no-catch-shadow: 0
   no-delete-var: 2
   no-label-var: 2
   no-shadow-restricted-names: 2
