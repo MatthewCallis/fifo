@@ -7,7 +7,7 @@ before_script:
   - npm install -g codeclimate-test-reporter
   - npm install
 script:
-  - npm run mae
+  - npm run make
   - npm run test
   - npm run report
 after_script:
