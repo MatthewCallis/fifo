@@ -1,297 +1,189 @@
+import LocalStorage from './localStorage';
+
 export default class Fifo {
-  constructor(namespace = 'fifo') {
-    this.namespace = namespace;
+  /**
+   * Contructs a new Fifo object.
+   * @param {object} options - The Fifo configuration.
+   */
+  constructor(options = {}) {
+    this.namespace = options.namespace || 'fifo';
     this.noLS = false;
-    this.queueLimit = null;
-    this.data = {
+
+    if (options.console) {
+      this.console = options.console;
+    } else {
+      this.console = () => {};
+    }
+
+    this.checkLocalStorage(options.shim);
+    this.data = JSON.parse(this.LS.getItem(this.namespace)) || {
       keys: [],
-      items: {}
+      items: {},
     };
+  }
+
+  checkLocalStorage(shim) {
+    // NOTE: This check has to be wrapped within a try/catch because of a SecurityError: DOM Exception 18 on iOS.
+    /* istanbul ignore next */
     try {
-      if (typeof localStorage !== "undefined" && localStorage !== null) {
-        this.data = JSON.parse(localStorage.getItem(this.namespace)) || {
-          keys: [],
-          items: {}
-        };
+      if (typeof shim !== 'undefined' || (typeof localStorage !== 'undefined' && localStorage !== null)) {
+        this.LS = shim || localStorage;
+        this.noLS = false;
       } else {
+        this.LS = new LocalStorage();
         this.noLS = true;
+        this.console('warn', 'No localStorage, shimming.');
       }
-    } catch (e) {
-      this.data = {
-        keys: [],
-        items: {}
-      };
+    } catch (error) {
+      this.LS = new LocalStorage();
       this.noLS = true;
+      this.console('warn', 'No localStorage, shimming.');
     }
   }
 
-  trySave(key, value) {
-    var error;
+  /**
+   * Attempts to save the key/value pair to localStorage.
+   * @return {boolean} - Whether or not the save was successful.
+   */
+  trySave() {
     if (this.noLS) {
       return false;
     }
+
     try {
-      if (!key) {
-        if (this.queueLimit && (this.data.keys.length > this.queueLimit)) {
-          return false;
-        }
-        localStorage.setItem(this.namespace, JSON.stringify(this.data));
-      } else {
-        localStorage.setItem(key, value);
-      }
+      this.LS.setItem(this.namespace, JSON.stringify(this.data));
       return true;
-    } catch (e) {
-      let error = e;
+    } catch (error) {
+      // 18 for Safari: SecurityError: DOM Exception 18
+      // 21 for some Safari
+      // 22 for Chrome and Safari, 1014 for Firefox: QUOTA_EXCEEDED_ERR
+      // -2147024882 for IE10 Out of Memory
+      /* istanbul ignore next */
       if (error.code === 18 || error.code === 21 || error.code === 22 || error.code === 1014 || error.number === -2147024882) {
         return false;
       }
-      throw error;
+      /* istanbul ignore next */
+      this.console('error', 'Error with localStorage:', error);
+      /* istanbul ignore next */
+      return true;
     }
   }
 
+  /**
+   * Attempts to remove the first item added to make room for the next.
+   * @return The item being removed.
+   */
   removeFirstIn() {
-    let firstIn = this.data.keys.pop();
-    let removedItem = {
+    const firstIn = this.data.keys.pop();
+    const removedItem = {
       key: firstIn,
-      value: this.data.items[firstIn]
+      value: this.data.items[firstIn],
     };
     delete this.data.items[firstIn];
     return removedItem;
   }
 
-  save(key, value) {
-    let removed = [];
+  /**
+   * Save the key/value pair to localStorage.
+   * @return The item being removed.
+   */
+  save() {
+    const removed = [];
     if (this.noLS) {
       return removed;
     }
-    while (!this.trySave(key, value)) {
+
+    while (!this.trySave()) {
+      // NOTE: Difficult to test without a browser, and difficult in a browser.
+      /* istanbul ignore next */
       if (this.data.keys.length) {
         removed.push(this.removeFirstIn());
-        if (!this.noLS) {
-          if (key) {
-            localStorage.setItem(this.namespace, JSON.stringify(this.data));
-          }
-        }
       } else {
-        throw new Error(`All items removed from ${this.namespace}, still can't save.`);
+        this.console('error', `All items removed from ${this.namespace}, still can't save.`);
       }
     }
+
     return removed;
   }
 
-  set(key, value, onRemoved) {
+  /**
+   * Set a key/value pair.
+   * @param {string} key - The key to use in the key value pair.
+   * @param value - The value to use in the key value pair.
+   * @return The current instance of Fifo.
+   */
+  set(key, value) {
     this.data.items[key] = value;
-    let index = this.data.keys.indexOf(key);
+    const index = this.data.keys.indexOf(key);
     if (index > -1) {
       this.data.keys.splice(index, 1);
     }
     this.data.keys.unshift(key);
-
-    let removed = this.save();
-    if (onRemoved && removed.length) {
-      onRemoved.call(this, removed);
-    }
+    this.save();
     return this;
   }
 
+  /**
+   * Get a value for a given key.
+   * @param {string} [key] - The key to use in the key value pair.
+   * @return The item, or, all items when no key is provided.
+   */
   get(key) {
     if (key) {
-      if (this.noLS) {
-        return this.data.items[key];
-      } else {
-        return localStorage.getItem(key) || this.data.items[key];
-      }
-    } else {
-      if (this.noLS) {
-        return this.data.items;
-      } else {
-        let items = this.data.items;
-        let keys = Object.keys(localStorage);
-        for (let i = 0, len = keys.length; i < len; i++) {
-          key = keys[i];
-          if (key !== this.namespace) {
-            items[key] = localStorage.getItem(key);
-          }
-        }
-        return items;
-      }
+      return this.data.items[key];
     }
+
+    // Return all items.
+    return this.data.items;
   }
 
-  setFixed(key, value, onRemoved) {
-    if (this.noLS) {
-      this.data.items[key] = value;
-      let index = this.data.keys.indexOf(key);
-      if (index > -1) {
-        this.data.keys.splice(index, 1);
-      }
-      this.data.keys.unshift(key);
-    }
-    let removed = this.save(key, value);
-    if (onRemoved && removed.length) {
-      onRemoved.call(this, removed);
-    }
-    return this;
-  }
-
+  /**
+   * All the keys currently being used.
+   * @return {array} The keys.
+   */
   keys() {
-    var i, j, key, keys, len, len1, ref, ref1;
-    keys = [];
-    ref = this.data.keys;
-    for (i = 0, len = ref.length; i < len; i++) {
-      key = ref[i];
-      keys.push(key);
-    }
-    if (this.noLS) {
-      if (this.queueLimit) {
-        keys.splice(-1 * this.queueLimit);
-      }
-      return keys;
-    }
-    ref1 = Object.keys(localStorage);
-    for (j = 0, len1 = ref1.length; j < len1; j++) {
-      key = ref1[j];
-      if (key !== this.namespace) {
-        keys.push(key);
-      }
-    }
-    return keys;
+    return this.data.keys || [];
   }
 
+  /**
+   * Checks for the existence of a key.
+   * @param {string} key - The key to check for.
+   * @return {boolean} Wheter or not the key exist.
+   */
   has(key) {
-    if (this.noLS) {
-      if (this.queueLimit) {
-        let keys = this.data.keys.slice(0);
-        keys.splice(-1 * this.queueLimit);
-        if (-1 !== keys.indexOf(key)) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      if (-1 !== this.data.keys.indexOf(key)) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    if (-1 !== this.data.keys.indexOf(key)) {
-      return true;
-    }
-    if (localStorage.getItem(key) !== null) {
-      return true;
-    }
-    return false;
+    return this.data.keys.indexOf(key) !== -1;
   }
 
+  /**
+   * Removes a key/value pair from the collection.
+   * @param victim - The key/value pair to find, can be one of a String, Regular Expression or a Function.
+   * @return The current instance of Fifo.
+   */
   remove(victim) {
-    if (typeof victim === 'string') {
-      return this._removeByString(victim);
+    if (victim == null || !this.data.keys) {
+      return this;
     }
-    if (victim instanceof RegExp) {
-      return this._removeByRegExp(victim);
-    }
-    if (typeof victim === 'function') {
-      return this._removeByFunction(victim);
-    }
-  }
 
-  _removeByString(victim) {
-    var i, index, len, ref, suspect;
-    if (!this.noLS) {
-      if (localStorage.getItem(victim)) {
-        localStorage.removeItem(victim);
-        return this;
-      }
-    }
-    ref = this.data.keys;
-    for (index = i = 0, len = ref.length; i < len; index = ++i) {
-      suspect = ref[index];
-      if (!(suspect === victim)) {
-        continue;
-      }
-      this.data.keys.splice(index, 1);
-      break;
-    }
-    delete this.data.items[victim];
-    this.save();
-    return this;
-  }
-
-  _removeByRegExp(victim) {
-    var i, index, j, len, len1, ref, ref1, suspect;
-    if (!this.noLS) {
-      Object.keys(localStorage).forEach(function(suspect) {
-        if (suspect.match(victim)) {
-          return localStorage.removeItem(suspect);
-        }
-      });
-    }
-    ref = this.data.keys;
-    for (index = i = 0, len = ref.length; i < len; index = ++i) {
-      suspect = ref[index];
-      if (!(suspect !== null && suspect !== undefined ? suspect.match(victim) : undefined)) {
-        continue;
-      }
-      this.data.keys.splice(index, 1);
-      delete this.data.items[suspect];
-    }
-    if (this.noLS) {
-      ref1 = Object.keys(this.data.items);
-      for (index = j = 0, len1 = ref1.length; j < len1; index = ++j) {
-        suspect = ref1[index];
-        if (!(suspect !== null && suspect !== undefined ? suspect.match(victim) : undefined)) {
-          continue;
-        }
-        this.data.keys.splice(index, 1);
+    const keys = this.data.keys;
+    keys.forEach((suspect, i) => {
+      if (suspect === victim) {
+        this.data.keys.splice(i, 1);
         delete this.data.items[suspect];
       }
-    }
+    }, this);
+
     this.save();
     return this;
   }
 
-  _removeByFunction(victim) {
-    var i, index, j, len, len1, ref, ref1, suspect;
-    if (!this.noLS) {
-      Object.keys(localStorage).forEach(function(suspect) {
-        if (victim(suspect)) {
-          return localStorage.removeItem(suspect);
-        }
-      });
-    }
-    ref = this.data.keys;
-    for (index = i = 0, len = ref.length; i < len; index = ++i) {
-      suspect = ref[index];
-      if (!((suspect !== null) && (suspect !== undefined) && victim.call(this, suspect))) {
-        continue;
-      }
-      this.data.keys.splice(index, 1);
-      delete this.data.items[suspect];
-    }
-    if (this.noLS) {
-      ref1 = Object.keys(this.data.items);
-      for (index = j = 0, len1 = ref1.length; j < len1; index = ++j) {
-        suspect = ref1[index];
-        if (!((suspect !== null) && (suspect !== undefined) && victim.call(this, suspect))) {
-          continue;
-        }
-        this.data.keys.splice(index, 1);
-        delete this.data.items[suspect];
-      }
-    }
-    this.save();
-    return this;
-  }
-
-  setQueueLimit(limit) {
-    this.queueLimit = limit;
-  }
-
+  /**
+   * Resets the local data and saves empting out the localStorage to an empty state.
+   * @return The current instance of Fifo.
+   */
   empty() {
     this.data = {
       keys: [],
-      items: {}
+      items: {},
     };
     this.save();
     return this;
