@@ -4,14 +4,12 @@ node_js:
 before_install:
   - npm conf set strict-ssl false
 before_script:
-  - phantomjs --version
   - npm install -g codeclimate-test-reporter
   - npm install
 script:
-  - npm run instrument
-  - npm run test-compile
-  - npm run test-phantomjs
-  - npm run coverage-report
+  - npm run mae
+  - npm run test
+  - npm run report
 after_script:
   - codeclimate-test-reporter < coverage/lcov.info
   - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
