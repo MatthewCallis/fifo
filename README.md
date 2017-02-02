@@ -1,8 +1,6 @@
 # [Fifo](https://github.com/MatthewCallis/fifo)
 
 [![Build Status](https://travis-ci.org/MatthewCallis/fifo.svg)](https://travis-ci.org/MatthewCallis/fifo)
-[![Dependency Status](https://david-dm.org/MatthewCallis/fifo.svg)](https://david-dm.org/MatthewCallis/fifo)
-[![devDependency Status](https://david-dm.org/MatthewCallis/fifo/dev-status.svg?style=flat)](https://david-dm.org/MatthewCallis/fifo#info=devDependencies)
 [![Test Coverage](https://codeclimate.com/github/MatthewCallis/fifo/badges/coverage.svg)](https://codeclimate.com/github/MatthewCallis/fifo/coverage)
 [![Coverage Status](https://coveralls.io/repos/github/MatthewCallis/fifo/badge.svg?branch=master)](https://coveralls.io/github/MatthewCallis/fifo?branch=master)
 
