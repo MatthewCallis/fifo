@@ -16,10 +16,17 @@ export default class Fifo {
     }
 
     this.checkLocalStorage(options.shim);
-    this.data = JSON.parse(this.LS.getItem(this.namespace)) || {
+    this.data = {
       keys: [],
       items: {},
     };
+
+    const dataFromStorage = JSON.parse(this.LS.getItem(this.namespace));
+    if (dataFromStorage && Object.prototype.hasOwnProperty.call(dataFromStorage, 'keys') && Object.prototype.hasOwnProperty.call(dataFromStorage, 'items')) {
+      this.data = dataFromStorage;
+    } else {
+      this.console('error', 'Namespace Collision, or, data is not in the correct format.');
+    }
   }
 
   checkLocalStorage(shim) {
