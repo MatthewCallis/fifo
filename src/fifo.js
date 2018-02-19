@@ -171,7 +171,7 @@ export default class Fifo {
       return this;
     }
 
-    const keys = this.data.keys;
+    const { keys } = this.data;
     keys.forEach((suspect, i) => {
       if (suspect === victim) {
         this.data.keys.splice(i, 1);

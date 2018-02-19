@@ -52,7 +52,7 @@ test('ensure it removes old items to add others, sending them to onLimit', (t) =
 
   const onLimit = (items) => {
     limitReached = true;
-    removedItem = items[0];
+    [removedItem] = items;
   };
 
   while (!(limitReached || i === 10000)) {
@@ -69,6 +69,7 @@ test('ensure it removes old items to add others, sending them to onLimit', (t) =
 
 test('fixed keys can be added once FIFO queue full then add additional items to FIFO queue and check that we kept the fixed item', (t) => {
   if (collection.noLS) {
+    t.is(true, true);
     return;
   }
 
@@ -80,17 +81,17 @@ test('fixed keys can be added once FIFO queue full then add additional items to 
   let key = null;
 
   const moreFifoOnLimit = (items) => {
-    removedItemForFifo = items[0];
+    [removedItemForFifo] = items;
   };
 
   const fixedKeyOnLimit = (items) => {
-    removedItemForFixedKey = items[0];
+    [removedItemForFixedKey] = items;
     collection.set(key, n1m, moreFifoOnLimit);
   };
 
   const fifoQueueOnLimit = (items) => {
     limitReached = true;
-    removedItem = items[0];
+    [removedItem] = items;
     collection.set('fixed-key', n1m, fixedKeyOnLimit);
   };
 

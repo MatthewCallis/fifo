@@ -4,7 +4,7 @@ const babel = require('rollup-plugin-babel');
 const json = require('rollup-plugin-json');
 
 rollup({
-  entry: 'src/fifo.js',
+  input: 'src/fifo.js',
   plugins: [
     json({
       exclude: ['node_modules/**'],
@@ -16,17 +16,14 @@ rollup({
       plugins: ['external-helpers'],
     }),
   ],
-})
-.then(bundle => (
+}).then(bundle => (
   bundle.write({
     format: 'es',
-    moduleName: 'Fifo',
-    dest: 'lib/fifo.js',
+    name: 'Fifo',
+    file: 'lib/fifo.js',
   })
-))
-.then(() => {
+)).then(() => {
   console.log('💝 Fifo Bundle Created!');
-})
-.catch((e) => {
+}).catch((e) => {
   console.error('💀 Rollup Error:', e);
 });

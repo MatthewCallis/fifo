@@ -3,6 +3,9 @@
 [![Build Status](https://travis-ci.org/MatthewCallis/fifo.svg)](https://travis-ci.org/MatthewCallis/fifo)
 [![Test Coverage](https://codeclimate.com/github/MatthewCallis/fifo/badges/coverage.svg)](https://codeclimate.com/github/MatthewCallis/fifo/coverage)
 [![Coverage Status](https://coveralls.io/repos/github/MatthewCallis/fifo/badge.svg?branch=master)](https://coveralls.io/github/MatthewCallis/fifo?branch=master)
+[![devDependency Status](https://david-dm.org/MatthewCallis/fifo/dev-status.svg?style=flat)](https://david-dm.org/MatthewCallis/fifo#info=devDependencies)
+[![npm version](https://img.shields.io/npm/v/localstorage-fifo.svg?style=flat-square)](https://www.npmjs.com/package/localstorage-fifo)
+[![npm downloads](https://img.shields.io/npm/dm/localstorage-fifo.svg?style=flat-square)](https://www.npmjs.com/package/localstorage-fifo)
 
 **First In First Out accounting for JavaScript `localStorage`.**
 
@@ -18,7 +21,7 @@ Additionally, `fifo` also stores all of your `key:value` pairs on one key in `lo
 
 ```javascript
 // create a collection stored on `tasks` key in localStorage
-const collection = Fifo({ namespace: 'tasks' });
+const collection = new Fifo({ namespace: 'tasks' });
 
 // set an item
 collection.set('task-1', 'close two tickets');
