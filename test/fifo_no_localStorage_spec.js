@@ -1,6 +1,5 @@
-/** @test {Fifo} */
 import test from 'ava';
-import Fifo from '../src/fifo';
+import Fifo from '../src/fifo.js';
 
 let collection = null;
 

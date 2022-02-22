@@ -1,7 +1,6 @@
-/** @test {Fifo} */
 import test from 'ava';
-import Fifo from '../src/fifo';
-import LocalStorage from '../src/localStorage';
+import Fifo from '../src/fifo.js';
+import LocalStorage from '../src/localStorage.js';
 
 let collection = null;
 

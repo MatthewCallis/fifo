@@ -63,7 +63,6 @@ Please see the source for more details.
 npm run lint
 npm run make
 npm run test
-npm run report
 ```
 
 ## License

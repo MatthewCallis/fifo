@@ -1,7 +1,5 @@
-/** @test {Fifo} */
 import test from 'ava';
-import { iterate } from 'leakage';
-import Fifo from '../src/fifo';
+import Fifo from '../src/fifo.js';
 
 let collection = null;
 let n10b = null;
@@ -112,12 +110,4 @@ test('fixed keys can be added once FIFO queue full then add additional items to 
 
   removedItemForFixedKey.key.should.equal('test:2');
   removedItemForFifo.key.should.equal('test:12');
-});
-
-test.skip('does not leak', (t) => {
-  t.notThrows(() => {
-    iterate(() => {
-      collection = new Fifo({ namespace: 'fifo:test' });
-    });
-  });
 });

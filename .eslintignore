@@ -1,1 +1,5 @@
-**/*{.,-}min.js
+public/*
+webpack.*
+coverage/*
+demo/*
+lib/*

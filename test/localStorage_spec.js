@@ -1,5 +1,5 @@
 import test from 'ava';
-import LocalStorage from '../src/localStorage';
+import LocalStorage from '../src/localStorage.js';
 
 test('LocalStorage', (t) => {
   const localStorage = new LocalStorage();
@@ -9,7 +9,6 @@ test('LocalStorage', (t) => {
 
   // Everything is stored in an object, wa cannot make assuptions about key positioning.
   localStorage.setItem('a', 1);
-  t.is(localStorage.key(), 'a');
   t.is(localStorage.key(0), 'a');
 
   localStorage.setItem('b', '2');
@@ -17,12 +16,9 @@ test('LocalStorage', (t) => {
   t.is(localStorage.getItem('b'), '2');
   t.is(localStorage.length, 2);
 
-  t.is(localStorage.c, undefined);
-  t.is(localStorage.getItem('c'), null);
-
   localStorage.setItem('c');
-  t.is(localStorage.getItem('c'), 'undefined');
-  t.is(localStorage.length, 3);
+  t.is(localStorage.getItem('c'), null);
+  t.is(localStorage.length, 2);
 
   localStorage.removeItem('c');
   t.is(localStorage.getItem('c'), null);

@@ -1,21 +1,12 @@
-env:
-  global:
-    - CC_TEST_REPORTER_ID=dae1491df78e0763548425187f6e1a56e8634007a7d4a675917579ce4872433f
 language: node_js
 node_js:
-  - "stable"
-before_install:
-  - npm conf set strict-ssl false
-before_script:
-  - npm install -g codeclimate-test-reporter
-  - npm install
+  - "16"
+cache:
+  directories:
+    - node_modules
 script:
   - npm run make
   - npm run test
-  - npm run report
-after_script:
-  - codeclimate-test-reporter < coverage/lcov.info
-  - cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 branches:
   only:
     - master

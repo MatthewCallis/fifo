@@ -1,7 +1,11 @@
+.cache
 .codeclimate.yml
 .coveralls.yml
 .DS_Store
+.mocha-puppeteer/
 .nyc_output
+.vscode/
+build-coverage/*.js
 coverage/
 instrumented/
 node_modules/

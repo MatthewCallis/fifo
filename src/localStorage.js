@@ -1,32 +1,31 @@
-export default class LocalStorage {
-  getItem(key) {
-    if (Object.prototype.hasOwnProperty.call(this, key)) {
-      return String(this[key]);
-    }
-    return null;
-  }
-
-  setItem(key, val) {
-    this[key] = String(val);
-  }
-
-  removeItem(key) {
-    delete this[key];
+export default class LocalStorageMock {
+  constructor() {
+    this.store = {};
   }
 
   clear() {
-    const self = this;
-    Object.keys(this).forEach((key) => {
-      self[key] = undefined;
-      delete self[key];
-    });
+    this.store = {};
   }
 
-  key(i = 0) {
-    return Object.keys(this)[i];
+  getItem(key) {
+    return this.store[key] || null;
+  }
+
+  removeItem(key) {
+    delete this.store[key];
+  }
+
+  setItem(key, value) {
+    if (value) {
+      this.store[key] = value.toString();
+    }
+  }
+
+  key(index) {
+    return Object.keys(this.store)[index];
   }
 
   get length() {
-    return Object.keys(this).length;
+    return Object.keys(this.store).length;
   }
 }

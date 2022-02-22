@@ -2,7 +2,12 @@
 .coveralls.yml
 .DS_Store
 .nyc_output
+assets
+assets_source
+config.json
 coverage/
 instrumented/
 node_modules/
 npm-debug.log
+support
+tmp

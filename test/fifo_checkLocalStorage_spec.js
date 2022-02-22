@@ -1,14 +1,6 @@
-/** @test {Fifo} */
 import test from 'ava';
-import Fifo from '../src/fifo';
-import LocalStorage from '../src/localStorage';
-
-test('#checkLocalStorage: accepts a shim for localStorage', (t) => {
-  const LS = new LocalStorage();
-  const collection = new Fifo({ shim: LS });
-  t.false(collection.noLS);
-  t.is(collection.LS, LS);
-});
+import Fifo from '../src/fifo.js';
+import LocalStorage from '../src/localStorage.js';
 
 test('#checkLocalStorage: accepts a shim for localStorage', (t) => {
   const LS = new LocalStorage();
